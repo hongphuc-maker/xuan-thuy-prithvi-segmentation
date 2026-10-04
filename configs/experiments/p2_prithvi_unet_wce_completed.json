@@ -1,0 +1,184 @@
+{
+  "schema": "prithvi-xtseg-v1",
+  "experiment_id": "P2_multitemporal6_sep21_UNet_WCE",
+  "target_date": "2026-09-21",
+  "baseline_commit": "0775770ae87b83b7d2982ed727226128685f3fba",
+  "model_hf_revision": "63adbd39c271da4c42f447e69b1a7c91a338cdc9",
+  "images": [
+    {
+      "path": "Sentinel2_2026-01-09_S2B_MSIL2A_20260109T_HSTDNNXUANTHUY_6bands_10m.tif",
+      "date": "2026-01-09",
+      "sha256": "50bc6049e2ceae1cd92f15d880c9d94d8c7727b4cb97c3a09fe5781651bcc8b0"
+    },
+    {
+      "path": "Sentinel2_2026-05-26_S2A_MSIL2A_20260526T_HSTDNNXUANTHUY_6bands_10m.tif",
+      "date": "2026-05-26",
+      "sha256": "9d4f4af0393b411759668173452cc5df658d895b5ccfbfb0b52c4eeff441f8b2"
+    },
+    {
+      "path": "Sentinel2_2026-07-18_S2B_MSIL2A_20260718T_HSTDNNXUANTHUY_6bands_10m.tif",
+      "date": "2026-07-18",
+      "sha256": "6fa20e2ec4f9dc73999d8b2e3ffd35ea670f4b7109507c355fb2e31f9cfdacab"
+    },
+    {
+      "path": "Sentinel2_2026-08-12_S2C_MSIL2A_20260812T_HSTDNNXUANTHUY_6bands_10m.tif",
+      "date": "2026-08-12",
+      "sha256": "21a57a5432f684165b15fa8a6f52f8e7b103a9dc03a6a24692b15a03200b2617"
+    },
+    {
+      "path": "Sentinel2_2026-09-03_S2A_MSIL2A_20260903T_HSTDNNXUANTHUY_6bands_10m.tif",
+      "date": "2026-09-03",
+      "sha256": "df112425707fe4fcc301d295c07c307f416ee1cbbd196d88fb5ec8660cc16630"
+    },
+    {
+      "path": "Sentinel2_2026-09-21_S2C_MSIL2A_20260921T_HSTDNNXUANTHUY_6bands_10m.tif",
+      "date": "2026-09-21",
+      "sha256": "d924eb0e19175ba0c38d1fc058516783778bf39fb4b27257977111c1c3ecfeb3"
+    }
+  ],
+  "label": {
+    "path": "rasterized_vector_categorized.tif",
+    "sha256": "d02d44ac7d8249ed62ca1e4df6794ac9787accbc57ce73bf1df2c139217048d5",
+    "reference_date": null,
+    "status": "historical labels; date unknown, not September ground truth"
+  },
+  "bands": [
+    "B02",
+    "B03",
+    "B04",
+    "B8A",
+    "B11",
+    "B12"
+  ],
+  "active_dates": [
+    "2026-01-09",
+    "2026-05-26",
+    "2026-07-18",
+    "2026-08-12",
+    "2026-09-03",
+    "2026-09-21"
+  ],
+  "class_map": {
+    "1": "Anm",
+    "2": "Bgt",
+    "3": "Dc",
+    "4": "Dnn",
+    "5": "DK",
+    "6": "trống",
+    "7": "Gt",
+    "8": "Rnm",
+    "9": "Stx",
+    "10": "Vbn",
+    "11": "Vcs"
+  },
+  "expected_shape": [
+    1374,
+    1821
+  ],
+  "expected_crs": "EPSG:32648",
+  "radiometry": {
+    "dn_offset": -1000.0,
+    "scale": 10000.0,
+    "provenance": "Assumption: raw PC L2A DN, PB>=04; verify export code before scientific reporting. Set offset=0 ONLY if already harmonized.",
+    "confirmed_from_export_code": false
+  },
+  "cloud_masks": {},
+  "quality_status": "No SCL/cloud masks supplied; exploratory run, cloud-free status not verified",
+  "normalization": {
+    "mean": [
+      1087,
+      1342,
+      1433,
+      2734,
+      1958,
+      1363
+    ],
+    "std": [
+      2248,
+      2179,
+      2178,
+      1850,
+      1242,
+      1049
+    ],
+    "units": "reflectance x 10000 after offset correction"
+  },
+  "split": {
+    "strategy": "vertical_band",
+    "parameters": {
+      "validation_start": 1122,
+      "validation_stop": 1389,
+      "guard_px_each_side": 48
+    },
+    "patch_policy": {
+      "size": 224,
+      "minimum_train_fraction": 0.5,
+      "validation_stride": 112,
+      "inference_stride": 112
+    },
+    "sampling": {
+      "manifest_seed": 20260905,
+      "schedule_seed": 20260906,
+      "n_patches": 4992,
+      "batch_size": 16,
+      "rare_codes": [
+        5,
+        6,
+        7
+      ],
+      "rare_quota_each": 416,
+      "dmi_support_floor_px": 128
+    }
+  },
+  "model": {
+    "backbone": "prithvi_eo_v2_300_tl",
+    "out_indices": [
+      5,
+      11,
+      17,
+      23
+    ],
+    "decoder": "UNetDecoder",
+    "decoder_channels": [
+      512,
+      256,
+      128,
+      64
+    ],
+    "head_dropout": 0.1,
+    "temporal_readout": "target-date token slice after joint temporal encoder",
+    "norm": "GroupNorm in neck/UNet decoder/head; encoder LayerNorm unchanged",
+    "gradient_checkpointing": true
+  },
+  "training": {
+    "seed": 20260910,
+    "micro_batch_size": 1,
+    "effective_batch_size": 16,
+    "maximum_steps": 3120,
+    "validation_interval_steps": 156,
+    "save_interval_steps": 78,
+    "encoder_lr": 1e-05,
+    "decoder_lr": 0.0001,
+    "weight_decay": 0.01,
+    "clip_grad_norm": 1.0,
+    "patience_evaluations": 6,
+    "min_delta": 0.001,
+    "precision": "fp16 on CUDA; fp32 on CPU",
+    "deterministic_algorithms": false,
+    "selection": "max validation macro-F1 over fixed 11 classes with acceptance gate; no points"
+  },
+  "acceptance": {
+    "required_predicted_classes": 11,
+    "minimum_recall_by_code": {
+      "5": 0.05,
+      "6": 0.05,
+      "7": 0.05
+    }
+  },
+  "independent_points": {
+    "path": "verified_points_shapefiles.zip",
+    "sha256": "3159aac0e6e8001a8c83d684c66c633575cdbcc3d72a9a3b0964473d14780c21",
+    "reference_date": null,
+    "status": "previously used reference; September validity unverified; report agreement only"
+  }
+}

@@ -1,0 +1,14 @@
+# PyTorch is supplied by the Colab GPU runtime.
+terratorch==1.2.12
+torchgeo==0.9.0
+timm==1.0.30
+segmentation-models-pytorch==0.5.0
+huggingface-hub==1.33.0
+rasterio==1.5.2
+pandas==2.2.3
+numpy==2.3.5
+einops==0.8.2
+matplotlib>=3.8,<4
+PyYAML>=6,<7
+geopandas>=1,<2
+tqdm>=4.66,<5

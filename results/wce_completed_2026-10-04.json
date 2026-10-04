@@ -1,0 +1,44 @@
+{
+  "schema": "prithvi-xtseg-result-summary-v1",
+  "experiment_id": "P2_multitemporal6_sep21_UNet_WCE",
+  "status": "completed_exploratory",
+  "training": {
+    "final_step": 3120,
+    "completed": true,
+    "early_stopped": true,
+    "selected_checkpoint": "best_any.pt",
+    "selected_step": 2184,
+    "acceptance_passed": false
+  },
+  "validation": {
+    "label_status": "historical labels; date unknown",
+    "n_pixels": 294156,
+    "macro_F1_11": 0.44292418407295797,
+    "macro_IoU_11": 0.35634221276673056,
+    "overall_agreement": 0.8383000856688287,
+    "weighted_cross_entropy": 1.093256950378418,
+    "predicted_classes": 10
+  },
+  "map": {
+    "target_date": "2026-09-21",
+    "valid_pixels": 1471132,
+    "status": "exploratory; not validated against date-matched September ground truth",
+    "map_sha256": "76f97d0ec7657afd96837b1db4321fcfc8a53330cdbf4680b0737103b237c2ab"
+  },
+  "reference_point_agreement": {
+    "input_points": 1037,
+    "usable_points": 1036,
+    "excluded_points": 1,
+    "represented_classes": 7,
+    "overall_agreement": 0.9218146718146718,
+    "macro_F1_11": 0.5747622905520205,
+    "macro_IoU_11": 0.5344385399511759,
+    "macro_F1_represented_classes": 0.9031978851531751,
+    "interpretation": "Agreement with previously used reference points; September accuracy not established"
+  },
+  "provenance": {
+    "method_hash": "d4f8bef93e89450b9935fd1f982d4c3ef25d23b7386b225cb98c8e27b288021c",
+    "checkpoint_sha256": "cb228899ad7503fe7b45a3301ea2a9e41247abbf18120582fa1142061a374988",
+    "executed_notebook_sha256_before_public_output_cleanup": "fd27dcf0f3678d2ce0f21d701d104d584aa8dfd25eaf4bc1ab656d3de2c086c1"
+  }
+}

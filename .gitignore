@@ -1,0 +1,35 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.coverage
+htmlcov/
+.venv/
+venv/
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Private or generated research assets
+data/
+runs/
+checkpoints/
+outputs/
+artifacts/
+*.pt
+*.pth
+*.ckpt
+*.tif
+*.tiff
+*.zip
+*.shp
+*.shx
+*.dbf
+*.prj
+*.cpg
+*.gpkg
+
+# Notebook scratch files
+.ipynb_checkpoints/
+*.nbconvert.ipynb
