@@ -1,0 +1,46 @@
+{
+  "schema": "prithvi-inference-dataset-v1",
+  "protocol": "B_spatial_transfer",
+  "dataset_id": "REPLACE_new_region_comparable_season",
+  "region_id": "REPLACE_NEW_REGION",
+  "target_date": "YYYY-MM-DD",
+  "images": [
+    {"path": "rasters/date_01_6bands_10m.tif", "date": "YYYY-MM-DD", "sha256": "REPLACE_WITH_SHA256"},
+    {"path": "rasters/date_02_6bands_10m.tif", "date": "YYYY-MM-DD", "sha256": "REPLACE_WITH_SHA256"},
+    {"path": "rasters/date_03_6bands_10m.tif", "date": "YYYY-MM-DD", "sha256": "REPLACE_WITH_SHA256"},
+    {"path": "rasters/date_04_6bands_10m.tif", "date": "YYYY-MM-DD", "sha256": "REPLACE_WITH_SHA256"},
+    {"path": "rasters/date_05_6bands_10m.tif", "date": "YYYY-MM-DD", "sha256": "REPLACE_WITH_SHA256"},
+    {"path": "rasters/date_06_6bands_10m.tif", "date": "YYYY-MM-DD", "sha256": "REPLACE_WITH_SHA256"}
+  ],
+  "bands": ["B02", "B03", "B04", "B8A", "B11", "B12"],
+  "grid": {
+    "crs": "REPLACE_WITH_PROJECTED_CRS",
+    "shape": [0, 0],
+    "resolution_metres": 10,
+    "same_region_as_training": false
+  },
+  "radiometry": {
+    "dn_offset": -1000.0,
+    "scale": 10000.0,
+    "offset_verified_for_source_product": false,
+    "verification_note": "REPLACE after checking the source product processing baseline and export path"
+  },
+  "normalization": {
+    "mean": [1087, 1342, 1433, 2734, 1958, 1363],
+    "std": [2248, 2179, 2178, 1850, 1242, 1049]
+  },
+  "inference": {
+    "patch_size": 224,
+    "stride": 112,
+    "overlap_blending": "mean_softmax_probability"
+  },
+  "evaluation": {
+    "date_matched_ground_truth": null,
+    "status": "qualitative until an independent date-matched label set is supplied"
+  },
+  "provenance": {
+    "aoi_source": "REPLACE",
+    "stac_collection": "sentinel-2-l2a",
+    "selected_item_ids": []
+  }
+}

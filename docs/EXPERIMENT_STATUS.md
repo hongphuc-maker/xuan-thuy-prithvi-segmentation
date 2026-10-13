@@ -1,6 +1,6 @@
 # Experiment status
 
-Status date: 5 October 2026.
+Status date: 13 October 2026.
 
 ## P2: Prithvi + UNet + WCE
 
@@ -40,20 +40,16 @@ Previously used reference-point agreement:
 This point result is not used for checkpoint selection and must not be described
 as independent September accuracy.
 
-## P5: frozen Prithvi warm-up to DMI + morphology
+## Protocol A and Protocol B
 
-Status: **source and Colab notebook prepared; training not started**.
+Status: **workflow code and templates prepared; no transfer result claimed**.
 
-Planned sequence:
-
-1. load the original Prithvi pretrained encoder;
-2. freeze the encoder in evaluation mode;
-3. train the task-specific neck, UNet decoder, and head with WCE;
-4. check readiness every 156 steps from step 312 through step 936;
-5. require two consecutive readiness passes;
-6. enable exact DMI and the trainable smooth 3x3 logit-closing layer;
-7. select primarily by validation macro-F1 after train-only class permutation,
-   with full-rank validation DMI loss as the secondary checkpoint.
-
-The P5 notebook does not contain experimental performance evidence. Any future
-P5 number must come from its separate run directory and immutable method hash.
+- Protocol A keeps the Xuân Thủy region and changes the six-date sequence to
+  test temporal transfer with the frozen selected P2 checkpoint.
+- Protocol B changes the region while retaining a comparable season to test
+  spatial transfer with the same frozen checkpoint.
+- Training, inference-dataset preparation, and inference/benchmark execution
+  are separated into three notebooks.
+- No Protocol A or Protocol B accuracy claim is valid until the locked dataset,
+  checkpoint, inference artifacts, and an independent date-matched label set
+  exist. Without such labels, outputs remain qualitative transfer maps.

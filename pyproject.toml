@@ -17,8 +17,6 @@ keywords = [
   "prithvi",
   "semantic-segmentation",
   "sentinel-2",
-  "dmi-loss",
-  "mathematical-morphology",
   "remote-sensing",
 ]
 classifiers = [
@@ -62,9 +60,11 @@ Repository = "https://github.com/hongphuc-maker/xuan-thuy-prithvi-segmentation"
 Issues = "https://github.com/hongphuc-maker/xuan-thuy-prithvi-segmentation/issues"
 
 [tool.setuptools.packages.find]
-where = ["src"]
+where = ["."]
+include = ["deployment*"]
+exclude = ["reference*", "tests*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-q"
-pythonpath = ["src"]
+pythonpath = ["."]

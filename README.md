@@ -4,18 +4,11 @@ Research code for 11-class semantic segmentation at Xuan Thuy using the
 Prithvi-EO-2.0-300M-TL foundation model, a UNet decoder, and six Sentinel-2
 observations. The target map date is 21 September 2026.
 
-This repository separates completed evidence from planned work:
+This repository separates completed evidence from new transfer workflows:
 
-| Branch | Initialization and objective | Status |
+| Experiment | Initialization and objective | Status |
 | --- | --- | --- |
 | P2 | Prithvi pretrained encoder + UNet decoder + weighted cross-entropy | Completed and evaluated |
-| P5 | Frozen Prithvi encoder + WCE task-head warm-up, then exact DMI + smooth logit morphology | Notebook and source prepared; training not started |
-
-The P5 branch does not load the completed WCE checkpoint. It starts from the
-original Prithvi pretrained encoder, keeps the encoder frozen, and warms up the
-randomly initialized task-specific neck, decoder, and classification head.
-Transition to DMI is allowed only after the numerical and class-coverage gate
-passes twice.
 
 ## Completed WCE result
 
@@ -50,13 +43,13 @@ Expected file names and SHA-256 checksums are recorded in the experiment JSON
 files. Dataset access remains separate from this source-code license.
 
 ```text
-configs/       immutable P2 and P5 experiment contracts
+configs/       immutable P2 contract and Protocol A/B inference templates
 docs/          data, status, and reproducibility notes
-notebooks/     Sentinel-2 export, completed WCE run, and prepared P5 run
+notebooks/     evidence notebooks plus separated train, data-prep, and inference notebooks
+deployment/    label-free P2 inference, map export, and benchmark helpers
 reference/     frozen source snapshot used by the completed WCE notebook
 results/       machine-readable summaries of completed evidence
-src/           current P5 Prithvi/DMI/morphology implementation
-tests/         lightweight contract and numerical tests
+tests/         lightweight P2 and inference-contract tests
 ```
 
 ## Run on Colab
@@ -65,14 +58,26 @@ The completed notebook is retained as an executed evidence snapshot:
 
 [Open the completed WCE notebook in Colab](https://colab.research.google.com/github/hongphuc-maker/xuan-thuy-prithvi-segmentation/blob/main/notebooks/01_prithvi_unet_wce_completed.ipynb)
 
-The next experiment is prepared but has no results yet:
-
-[Open the staged WCE warm-up to DMI + morphology notebook in Colab](https://colab.research.google.com/github/hongphuc-maker/xuan-thuy-prithvi-segmentation/blob/main/notebooks/02_frozen_prithvi_wce_warmup_dmi_morphology.ipynb)
-
 Place the private data files under the notebook's `DATA_ROOT`, verify every
-checksum, select a GPU runtime, and run from the first cell. Do not treat the
-P5 notebook as completed until its own run directory contains the selection,
-map, and evaluation artifacts.
+checksum, select a GPU runtime, and run from the first cell.
+
+### Standardized execution notebooks
+
+New Protocol A and Protocol B work is separated by responsibility:
+
+1. [`10_train_p2_wce_only.ipynb`](notebooks/10_train_p2_wce_only.ipynb)
+   trains or resumes P2 and stops after checkpoint selection;
+2. [`20_prepare_inference_dataset.ipynb`](notebooks/20_prepare_inference_dataset.ipynb)
+   prepares six aligned acquisitions and writes a locked inference manifest;
+3. [`30_inference_map_benchmark.ipynb`](notebooks/30_inference_map_benchmark.ipynb)
+   loads one selected P2 checkpoint, benchmarks T4 inference, and optionally
+   writes a label-free map.
+
+The inference path does not load the training label, split, optimizer, or WCE
+loss. See
+[`docs/STANDARDIZED_WORKFLOW_PROTOCOLS_A_B.md`](docs/STANDARDIZED_WORKFLOW_PROTOCOLS_A_B.md)
+for the Drive layout, approval gates, and interpretation boundaries. Protocol C
+is deferred.
 
 ## Local development
 
@@ -101,7 +106,8 @@ repository at the pinned baseline commit recorded in each experiment contract.
 - The reader applies DN offset -1000 and the locked normalization statistics.
 - No SCL/cloud masks are supplied; nodata validity is not cloud validity.
 - The label raster is historical and has no confirmed September reference date.
-- P5 is a planned experiment. No DMI or morphology performance result is claimed.
+- Protocol A and Protocol B have prepared workflows but no reported transfer
+  result until their locked inference artifacts exist.
 
 ## License
 
