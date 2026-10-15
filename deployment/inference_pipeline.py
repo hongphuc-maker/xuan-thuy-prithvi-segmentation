@@ -50,8 +50,11 @@ def _atomic_json(value: Any, path: str | Path) -> None:
     os.replace(temporary, path)
 
 
-def load_manifest(path: str | Path) -> dict[str, Any]:
-    return validate_inference_manifest(json.loads(Path(path).read_text(encoding="utf-8")))
+def load_manifest(path: str | Path, expected_frames: int = 6) -> dict[str, Any]:
+    return validate_inference_manifest(
+        json.loads(Path(path).read_text(encoding="utf-8")),
+        expected_frames=expected_frames,
+    )
 
 
 def _check_grid(source: rasterio.io.DatasetReader, profile: dict[str, Any]) -> None:
@@ -64,12 +67,18 @@ def _check_grid(source: rasterio.io.DatasetReader, profile: dict[str, Any]) -> N
 
 
 class InferenceScene:
-    """Six-date, six-band raster stack without labels or train/validation masks."""
+    """Locked one- or six-date raster stack without labels or split artifacts."""
 
-    def __init__(self, manifest_path: str | Path, verify: bool = True):
+    def __init__(
+        self,
+        manifest_path: str | Path,
+        verify: bool = True,
+        expected_frames: int = 6,
+    ):
         self.manifest_path = Path(manifest_path).resolve()
         self.root = self.manifest_path.parent
-        self.manifest = load_manifest(self.manifest_path)
+        self.expected_frames = expected_frames
+        self.manifest = load_manifest(self.manifest_path, expected_frames=expected_frames)
         self.dates = [spec["date"] for spec in self.manifest["images"]]
         arrays: list[np.ndarray] = []
         valid_masks: list[np.ndarray] = []
@@ -126,7 +135,7 @@ class InferenceScene:
             "manifest_sha256": sha256_file(self.manifest_path),
         }
         if not self.image_valid.any():
-            raise ValueError("No pixel is valid in all six acquisitions")
+            raise ValueError("No pixel is valid across the locked input acquisition(s)")
 
     @property
     def patch_size(self) -> int:
@@ -213,19 +222,20 @@ def load_wce_model(
     checkpoint_path: str | Path,
     device: torch.device | None = None,
 ):
-    """Build the six-frame P2 architecture and load a selected WCE checkpoint."""
+    """Build the frame-matched WCE architecture and load its selected checkpoint."""
 
-    validate_inference_manifest(manifest)
     base_config = json.loads(Path(base_config_path).read_text(encoding="utf-8"))
     if base_config.get("schema") != "prithvi-xtseg-v1":
         raise ValueError("The deployment path supports the completed P2 WCE contract only")
     if base_config.get("bands") != BAND_ORDER:
         raise ValueError("Base training configuration uses a different band contract")
+    expected_frames = len(base_config.get("active_dates", []))
+    validate_inference_manifest(manifest, expected_frames=expected_frames)
     config = copy.deepcopy(base_config)
     config["active_dates"] = [spec["date"] for spec in manifest["images"]]
     config["target_date"] = manifest["target_date"]
-    if len(config["active_dates"]) != 6:
-        raise ValueError("The selected checkpoint architecture requires six frames")
+    if len(config["active_dates"]) != expected_frames:
+        raise ValueError("Inference frames differ from the selected checkpoint architecture")
 
     # The notebook must put the frozen reference/wce_completed package on sys.path.
     from prithvi_xtseg.model import build_model

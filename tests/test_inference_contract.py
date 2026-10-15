@@ -57,10 +57,26 @@ def test_accepts_protocol_b_contract():
     assert validate_inference_manifest(value) is value
 
 
+def test_accepts_single_date_for_single_frame_checkpoint():
+    value = manifest()
+    value["images"] = [value["images"][-1]]
+    value["target_date"] = value["images"][0]["date"]
+    value["model_input_frames"] = 1
+    assert validate_inference_manifest(value, expected_frames=1) is value
+
+
+def test_rejects_single_date_for_six_frame_checkpoint():
+    value = manifest()
+    value["images"] = [value["images"][-1]]
+    value["target_date"] = value["images"][0]["date"]
+    with pytest.raises(ValueError, match="exactly 6"):
+        validate_inference_manifest(value)
+
+
 @pytest.mark.parametrize(
     ("mutate", "message"),
     [
-        (lambda value: value["images"].pop(), "exactly six"),
+        (lambda value: value["images"].pop(), "exactly 6"),
         (lambda value: value.update(target_date="2027-09-21"), "final acquisition"),
         (lambda value: value["bands"].reverse(), "Band order"),
         (

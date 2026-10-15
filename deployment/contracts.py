@@ -13,8 +13,13 @@ EXPECTED_STD = [2248, 2179, 2178, 1850, 1242, 1049]
 ALLOWED_PROTOCOLS = {"A_temporal_transfer", "B_spatial_transfer"}
 
 
-def validate_inference_manifest(manifest: dict[str, Any]) -> dict[str, Any]:
+def validate_inference_manifest(
+    manifest: dict[str, Any], expected_frames: int = 6
+) -> dict[str, Any]:
     """Validate the model-facing contract without reading raster bytes."""
+
+    if not isinstance(expected_frames, int) or expected_frames < 1:
+        raise ValueError("expected_frames must be a positive integer")
 
     if manifest.get("schema") != "prithvi-inference-dataset-v1":
         raise ValueError("Unsupported inference dataset schema")
@@ -26,8 +31,13 @@ def validate_inference_manifest(manifest: dict[str, Any]) -> dict[str, Any]:
         raise ValueError("region_id is required")
 
     images = manifest.get("images")
-    if not isinstance(images, list) or len(images) != 6:
-        raise ValueError("The P2 checkpoint requires exactly six acquisitions")
+    if not isinstance(images, list) or len(images) != expected_frames:
+        raise ValueError(
+            f"The selected checkpoint requires exactly {expected_frames} acquisition(s)"
+        )
+    declared_frames = manifest.get("model_input_frames")
+    if declared_frames is not None and int(declared_frames) != expected_frames:
+        raise ValueError("model_input_frames differs from the selected checkpoint")
     dates = [str(spec.get("date", "")) for spec in images]
     parsed = [date.fromisoformat(value) for value in dates]
     if parsed != sorted(set(parsed)):
