@@ -9,6 +9,7 @@ This repository separates completed evidence from new transfer workflows:
 | Experiment | Initialization and objective | Status |
 | --- | --- | --- |
 | P2 | Prithvi pretrained encoder + UNet decoder + weighted cross-entropy | Completed and evaluated |
+| P3 | Single-date Prithvi pretrained encoder + UNet decoder + weighted cross-entropy | Executable branch prepared; not yet trained |
 
 ## Completed WCE result
 
@@ -68,7 +69,8 @@ New Protocol A and Protocol B work is separated by responsibility:
 1. [`10_train_p2_wce_only.ipynb`](notebooks/10_train_p2_wce_only.ipynb)
    trains or resumes P2 and stops after checkpoint selection;
 2. [`20_prepare_inference_dataset.ipynb`](notebooks/20_prepare_inference_dataset.ipynb)
-   prepares six aligned acquisitions and writes a locked inference manifest;
+   audits six individual-item GeoTIFFs exported by `Sentinel_2.ipynb` (folder or
+   ZIP input), excludes mosaic files, and writes a locked inference manifest;
 3. [`30_inference_map_benchmark.ipynb`](notebooks/30_inference_map_benchmark.ipynb)
    loads one selected P2 checkpoint, benchmarks T4 inference, and optionally
    writes a label-free map.
@@ -78,6 +80,23 @@ loss. See
 [`docs/STANDARDIZED_WORKFLOW_PROTOCOLS_A_B.md`](docs/STANDARDIZED_WORKFLOW_PROTOCOLS_A_B.md)
 for the Drive layout, approval gates, and interpretation boundaries. Protocol C
 is deferred.
+
+### Single-date control branch
+
+The T=1 branch is isolated from P2 so a six-frame checkpoint is never silently
+used with a one-frame input:
+
+1. [`11_train_p3_single_wce.ipynb`](notebooks/11_train_p3_single_wce.ipynb)
+   fine-tunes P3 from the official Prithvi pretrained checkpoint using only the
+   21 September image as model input;
+2. [`21_prepare_single_date_inference_dataset.ipynb`](notebooks/21_prepare_single_date_inference_dataset.ipynb)
+   audits and stages one six-band GeoTIFF without opening labels;
+3. [`31_inference_single_map_benchmark.ipynb`](notebooks/31_inference_single_map_benchmark.ipynb)
+   strict-loads the selected P3 checkpoint, benchmarks T4 inference, and creates
+   a single-date map.
+
+See [`docs/SINGLE_DATE_BRANCH.md`](docs/SINGLE_DATE_BRANCH.md) for the fixed
+comparison design and the limits of interpretation.
 
 ## Local development
 

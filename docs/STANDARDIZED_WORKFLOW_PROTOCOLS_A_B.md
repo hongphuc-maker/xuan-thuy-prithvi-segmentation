@@ -14,7 +14,7 @@ map run cannot silently retrain the model or reuse a training label.
 | Notebook | Responsibility | Inputs | Outputs |
 | --- | --- | --- | --- |
 | `10_train_p2_wce_only.ipynb` | Train or resume P2 and select a checkpoint | Locked P2 config, six training images, historical label | Checkpoints, histories, model selection |
-| `20_prepare_inference_dataset.ipynb` | Prepare a six-date stack for a target region and time | AOI, six approved STAC item IDs, radiometry decision | Six aligned GeoTIFFs and `inference_dataset.json` |
+| `20_prepare_inference_dataset.ipynb` | Audit and stage a six-date stack for a target region and time | Folder or ZIP from the individual-item export in `Sentinel_2.ipynb`, six exact filenames and STAC item IDs | Six audited GeoTIFFs and `inference_dataset.json` |
 | `30_inference_map_benchmark.ipynb` | Load one selected P2 checkpoint, benchmark, and create a map | Checkpoint, P2 config, inference manifest | Benchmark JSON, map GeoTIFFs, inference lock |
 
 The inference notebooks do not open the training label raster, training split,
@@ -66,11 +66,14 @@ training:
 - 224 by 224 inference tiles with stride 112;
 - mean blending of softmax probabilities in overlap regions.
 
-The data-preparation notebook writes the raw source DN stack. The inference
-reader applies the offset. Set `offset_verified_for_source_product=true` only
-after checking the source product processing baseline and export path. This
-gate prevents applying the offset twice to data that have already been
-harmonized.
+`Sentinel_2.ipynb` writes the selected individual-item spectral COG values as
+uint16 DN on a common grid without applying the reader offset or normalization.
+The data-preparation notebook audits that export and stages the pixels without
+changing valid DN values. The inference reader applies the offset. Do not use
+the annual mosaic export, because that file can mix observations from different
+dates within one raster. This verifies that the local export path does not apply
+the offset twice; the upstream Planetary Computer radiometric convention remains
+the same explicit project assumption as in the completed P2 contract.
 
 ## 4. Protocol A: temporal transfer
 
@@ -127,15 +130,18 @@ pipeline runs, but does not establish accuracy.
 
 Do not start inference until all checks pass:
 
-1. six exact STAC item IDs are recorded;
-2. acquisition dates are unique, sorted, and end at the target date;
-3. every GeoTIFF has six bands with the required descriptions;
-4. all files share CRS, transform, width, and height;
-5. raster masks identify valid pixels and the six-date intersection is not empty;
-6. the radiometric offset decision is documented;
-7. file SHA-256 values are stored in the manifest;
-8. the manifest identifies Protocol A or Protocol B;
-9. the dataset folder is read-only after the manifest is approved.
+1. six exact individual-item filenames and full STAC item IDs are recorded;
+2. no `Sentinel2_Mosaic_*.tif` file is selected;
+3. acquisition dates are unique, sorted, and end at the target date;
+4. every GeoTIFF has six bands with the required descriptions and the expected
+   Planetary Computer source tag;
+5. all files are uint16 raw DN with nodata 0 and share the same projected,
+   north-up 10 m CRS, transform, width, and height;
+6. raster masks identify valid pixels and the six-date intersection is not empty;
+7. the radiometric offset decision is documented from the export code path;
+8. source and staged-file SHA-256 values are stored in the manifest;
+9. the manifest identifies Protocol A or Protocol B;
+10. the dataset folder is read-only after the manifest is approved.
 
 ## 7. Inference and benchmark artifacts
 
