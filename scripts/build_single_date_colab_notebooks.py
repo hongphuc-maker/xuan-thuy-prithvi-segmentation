@@ -50,7 +50,7 @@ import subprocess, sys
 from pathlib import Path
 
 REPO_URL = 'https://github.com/hongphuc-maker/xuan-thuy-prithvi-segmentation.git'
-REPO_REF = 'main'  # Replace with the approved commit SHA before the scientific run.
+REPO_REF = 'bcb09ee428c87d33a742474bda9561c4e1b40328'
 REPO_ROOT = Path('/content/xuan-thuy-prithvi-segmentation')
 
 if not (REPO_ROOT / '.git').exists():
